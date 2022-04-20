@@ -1,0 +1,13 @@
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\bin\Release\Assembly-CSharp.CustomHubs.mm.dll
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\bin\Release\Assembly-CSharp.CustomHubs.mm.pdb
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\bin\Release\Mono.Cecil.dll
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\bin\Release\MonoMod.exe
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\bin\Release\MonoMod.Utils.dll
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\bin\Release\Mono.Cecil.pdb
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\bin\Release\MonoMod.xml
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\bin\Release\MonoMod.Utils.xml
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\obj\Release\CustomHubs.csproj.CoreCompileInputs.cache
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\obj\Release\CustomHubs.csproj.CopyComplete
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\obj\Release\Assembly-CSharp.CustomHubs.mm.dll
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\obj\Release\Assembly-CSharp.CustomHubs.mm.pdb
+C:\Users\11dli\source\repos\Assembly-CSharp.CustomHubs.mm\obj\Release\CustomHubs.csproj.AssemblyReference.cache

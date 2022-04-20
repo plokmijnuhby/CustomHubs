@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>CS0626, CS0649, CS0169</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp - Copy">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Assembly-CSharp - Copy.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Assembly-CSharp - Copy.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
@@ -64,19 +65,19 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="Unity.InputSystem">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Unity.InputSystem.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Unity.InputSystem.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

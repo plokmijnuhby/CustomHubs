@@ -68,7 +68,7 @@ class patch_World : World
     }
 
     extern private void orig_KeyboardShortcuts();
-    new private void KeyboardShortcuts()
+    private void KeyboardShortcuts()
     {
         if(Keyboard.current.f5Key.wasPressedThisFrame && inCustomHub)
         {
