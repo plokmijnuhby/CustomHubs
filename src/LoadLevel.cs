@@ -199,6 +199,7 @@ class patch_LoadLevel : LoadLevel
             Hub.puzzleLineRefs[puzzleLine.to].toMe.Add(puzzleLine);
         }
         Hub.puzzleLines = puzzleLines.ToArray();
+        SaveFile.Load();
 
         var walking = new List<string>();
         foreach (var entry in Hub.puzzleData)

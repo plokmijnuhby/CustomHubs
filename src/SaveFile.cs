@@ -7,7 +7,7 @@ class patch_SaveFile : SaveFile
     {
         if (patch_World.inCustomHub)
         {
-            return Path.Combine(patch_World.paths["hub"], "../save" + slot.ToString() + ".txt");
+            return Path.Combine(Path.GetDirectoryName(patch_World.paths["hub"]), "save" + slot + ".txt");
         }
         else
         {
