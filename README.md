@@ -1,7 +1,7 @@
 # CustomHubs
 This is a mod for Patrick's Parabox, to allow support for custom hub areas to be created. Using it is a little complicated, so feel free to DM me if I haven't made something clear enough here.
 ## Installation
-To install this mod, first locate the parabox game files. These are usually found at "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox". Go to [the MonoMod releases page](https://github.com/MonoMod/MonoMod/releases/) and download the version ending in "net452.zip". Unzip it and copy the entire contents into the parabox game files, in the folder "Patrick's Parabox\Patrick's Parabox_Data\Managed". Download the file "Assembly-CSharp.CustomHubs.mm.dll" from this repository, and move it into the same folder. Then open up a command prompt, navigate to that folder, and type in:
+To install this mod, first locate the parabox game files. These are usually found at "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox". Go to [the MonoMod releases page](https://github.com/MonoMod/MonoMod/releases/) and download the version ending in "net452.zip". Unzip it and copy the entire contents into the parabox game files, in the folder "Patrick's Parabox\Patrick's Parabox_Data\Managed". Download the file ["Assembly-CSharp.CustomHubs.mm.dll"](https://github.com/plokmijnuhby/CustomHubs/raw/main/Assembly-CSharp.CustomHubs.mm.dll) from this repository, and move it into the same folder. Then open up a command prompt, navigate to that folder, and type in:
 ```
 MonoMod.exe Assembly-CSharp.dll
 ```
@@ -21,6 +21,7 @@ In addition, walls also have an extra argument, with the following effects:
 - `_`: a regular wall.
 - the name of a puzzle: indicates this wall will unlock when enough puzzles are complete, and it should be connected to the named puzzle.
 - some other values are possible, but I didn't bother testing them to make sure they work properly. I wouldn't advise using them.
+
 Finally, a playerButton will launch the credits sequence, if unlocked.
 There are a few more important points to bear in mind. Firstly, for unlockable walls to work properly, the wall should be on one of the four spaces next to a reference. Secondly, the player should not start next to a portal, since this interferes with the way the portal is exited. Finally, when reloading a save, the player will be placed on the center of the second row from the top in the current area, so this spot should be kept clear in every area.
 
