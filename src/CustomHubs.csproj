@@ -88,8 +88,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy Assembly-CSharp.CustomHubs.mm.dll "../../../Assembly-CSharp.CustomHubs.mm.dll"
-copy Assembly-CSharp.CustomHubs.mm.dll "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Assembly-CSharp.CustomHubs.mm.dll"
+    <PostBuildEvent>copy Assembly-CSharp.CustomHubs.mm.dll "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Assembly-CSharp.CustomHubs.mm.dll"
 cd "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed"
 MonoMod.exe Assembly-CSharp.dll
 copy MONOMODDED_Assembly-CSharp.dll Assembly-CSharp.dll</PostBuildEvent>
