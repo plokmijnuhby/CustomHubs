@@ -40,12 +40,17 @@ class patch_LoadLevel : LoadLevel
                 && Hub.puzzleLineRefs[floor.SceneName].toMe.Count == 0)
             {
                 var outside = floor.OuterLevel.GetExitBlock().OuterLevel;
-                if (outside == null || !(from block in blocks
-                                        where block.unlockerScene != null
-                                        from floor2 in outside.floorList
-                                        where floor2.SceneName == block.unlockerScene
-                                        select floor2).Any())
+                if (outside == null || outside.hubAreaName == null
+                    || !(wallUnlockAnimPlayed.ContainsKey(outside.hubAreaName)
+                        || (from block in blocks
+                            where block.unlockerScene != null
+                            from floor2 in outside.floorList
+                            where floor2.SceneName == block.unlockerScene
+                            select floor2).Any()
+                        )
+                    )
                 {
+                    Debug.Log(string.Join(",", wallUnlockAnimPlayed.Values));
                     floor.UnlockLines = floor.UnlockLines.Where(
                         line => floor.ypos + line.dy != floor.OuterLevel.height
                         ).ToArray();
