@@ -1,9 +1,15 @@
 # CustomHubs
 This is a mod for Patrick's Parabox, to allow support for custom hub areas to be created. Using it is a little complicated, so feel free to DM me if I haven't made something clear enough here.
 ## Installation
-To install this mod, first locate the parabox game files. These are usually found at "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox". Go to [the MonoMod releases page](https://github.com/MonoMod/MonoMod/releases/) and download the version ending in "net452.zip". Unzip it and copy the entire contents into the parabox game files, in the folder "Patrick's Parabox\Patrick's Parabox_Data\Managed". Download the file "Assembly-CSharp.CustomHubs.mm.dll" from [the releases page of this repository](https://github.com/plokmijnuhby/CustomHubs/releases), and move it into the same folder. Then open up a command prompt, navigate to that folder, and type in:
+To install this mod, first locate the parabox game files. These are usually found at "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox". Go to [the MonoMod releases page](https://github.com/MonoMod/MonoMod/releases/) and download the version ending in "net452.zip". Unzip it and copy the entire contents into the parabox game files, in the folder "Patrick's Parabox\Patrick's Parabox_Data\Managed". Download the file "Assembly-CSharp.CustomHubs.mm.dll" from [the releases page of this repository](https://github.com/plokmijnuhby/CustomHubs/releases), and move it into the same folder.
+
+If you are on windows, open up a command prompt, navigate to that folder, and type in
 ```
 MonoMod.exe Assembly-CSharp.dll
+```
+On Linux, you can instead type this (you may need to install mono first):
+```
+mono MonoMod.exe Assembly-CSharp.dll
 ```
 This should generate a file called "MONOMODDED_Assembly-CSharp.dll" in that folder. Delete the file "Assembly-CSharp.dll" (or move it outside of the game files) and rename the MONOMODDED file to Assembly-CSharp.dll.
 
