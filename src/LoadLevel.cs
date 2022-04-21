@@ -54,7 +54,9 @@ class patch_LoadLevel : LoadLevel
 
             // Add a line from the final level to the credits
             if (floor.Type == Floor.FloorType.LevelPortal
-                && Hub.puzzleLineRefs[floor.SceneName].fromMe.Count == 0
+                && !Hub.puzzleLineRefs[floor.SceneName].fromMe.Where(
+                    line => Hub.puzzleData[line.to].hard == 0
+                    ).Any()
                 && floor.Hard == 0)
             {
                 foreach (var floor2 in floor.OuterLevel.floorList)

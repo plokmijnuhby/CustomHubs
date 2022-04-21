@@ -94,8 +94,10 @@ class patch_World : World
                                    from floor2 in floor.OuterLevel.floorList
                                    select floor2))
             {
-                if (floor.Type == Floor.FloorType.LevelPortal && floor.Hard == 0
-                    && Hub.puzzleLineRefs[floor.SceneName].fromMe.Count == 0 && !floor.Won)
+                if (floor.Type == Floor.FloorType.LevelPortal && floor.Hard == 0 && !floor.Won
+                    && !Hub.puzzleLineRefs[floor.SceneName].fromMe.Where(
+                        line => Hub.puzzleData[line.to].hard == 0
+                    ).Any())
                 {
                     ButtonsSatisfied = false;
                     return;

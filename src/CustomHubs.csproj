@@ -22,6 +22,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>CS0626, CS0649, CS0169</NoWarn>
+    <PlatformTarget>x64</PlatformTarget>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,8 +31,8 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>1</WarningLevel>
-    <NoWarn>CS0626</NoWarn>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>CS0626, CS0649, CS0169</NoWarn>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup>
@@ -86,7 +88,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy Assembly-CSharp.CustomHubs.mm.dll "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Assembly-CSharp.CustomHubs.mm.dll"
+    <PostBuildEvent>copy Assembly-CSharp.CustomHubs.mm.dll "../../../Assembly-CSharp.CustomHubs.mm.dll"
+copy Assembly-CSharp.CustomHubs.mm.dll "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Assembly-CSharp.CustomHubs.mm.dll"
 cd "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed"
 MonoMod.exe Assembly-CSharp.dll
 copy MONOMODDED_Assembly-CSharp.dll Assembly-CSharp.dll</PostBuildEvent>
