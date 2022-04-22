@@ -23,8 +23,33 @@ class patch_LoadLevel : LoadLevel
                select line.Split(' ');
     }
 
-    [MonoModIgnore]
-    private static Dictionary<string, List<LoadLevel.UnlockableWall>> unlockableWalls;
+    public static bool isFirstArea(Level level)
+    {
+        // Check if level precedes area without unlockable walls
+        var outside = level.GetExitBlock().OuterLevel;
+        if (outside != null && outside.hubAreaName != null)
+        {
+            if (wallUnlockAnimPlayed.ContainsKey(outside.hubAreaName))
+            {
+                return false;
+            }
+            foreach (var block in outside.blockList)
+            {
+                if (block.unlockerScene != null)
+                {
+                    foreach(var floor2 in outside.floorList)
+                    {
+                        if (floor2.SceneName == block.unlockerScene)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     private static void LastMinuteHubFixes()
     {
         var music = FMODSquare.AreaNameToFMODIndex;
@@ -33,28 +58,15 @@ class patch_LoadLevel : LoadLevel
         // Fix some things in DoHubModifications that were just too complicated to do in assembly.
         foreach (var floor in floors)
         {
-            // In areas which precede areas without unlockable walls, main-path portals with no lines
-            // should not be given a line out of the level, because there's no previous level for
-            // them to be connected to.
+            // In the first area, main-path portals with no lines should not be given a line out
+            // of the level, because there's no previous level for them to be connected to.
             if (floor.Type == Floor.FloorType.LevelPortal
-                && Hub.puzzleLineRefs[floor.SceneName].toMe.Count == 0)
+                && Hub.puzzleLineRefs[floor.SceneName].toMe.Count == 0
+                && isFirstArea(floor.OuterLevel))
             {
-                var outside = floor.OuterLevel.GetExitBlock().OuterLevel;
-                if (outside == null || outside.hubAreaName == null
-                    || !(wallUnlockAnimPlayed.ContainsKey(outside.hubAreaName)
-                        || (from block in blocks
-                            where block.unlockerScene != null
-                            from floor2 in outside.floorList
-                            where floor2.SceneName == block.unlockerScene
-                            select floor2).Any()
-                        )
-                    )
-                {
-                    Debug.Log(string.Join(",", wallUnlockAnimPlayed.Values));
-                    floor.UnlockLines = floor.UnlockLines.Where(
-                        line => floor.ypos + line.dy != floor.OuterLevel.height
-                        ).ToArray();
-                }
+                floor.UnlockLines = floor.UnlockLines.Where(
+                    line => floor.ypos + line.dy != floor.OuterLevel.height
+                    ).ToArray();
             }
 
             // Add a line from the final level to the credits

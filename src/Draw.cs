@@ -30,4 +30,19 @@ class patch_Draw : Draw
         }
         orig_ConstructCreditsString();
     }
+
+    extern public static void orig_PerpetualZoomOutPickNewBlock();
+    new public static void PerpetualZoomOutPickNewBlock()
+    {
+        if (!patch_LoadLevel.isFirstArea(ZoomOutAnimFocusBlock.SubLevel))
+        {
+            orig_PerpetualZoomOutPickNewBlock();
+            return;
+        }
+        // This tells parabox to still run its checks, but take this to be the last block
+        int oldEffect = ZoomOutAnimFocusBlock.SpecialEffect;
+        ZoomOutAnimFocusBlock.SpecialEffect = 6;
+        orig_PerpetualZoomOutPickNewBlock();
+        ZoomOutAnimFocusBlock.SpecialEffect = oldEffect;
+    }
 }
