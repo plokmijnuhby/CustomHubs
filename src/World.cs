@@ -45,6 +45,7 @@ class patch_World : World
             Hub.puzzleLineRefs.Clear();
             Hub.LoadPuzzleData();
             FMODSquare.AreaNameToFMODIndex = patch_LoadLevel.oldFMODIndex;
+            UnlockAllRepositionAreaName = null;
             SaveFile.Load();
             orig_GoToLevel("hub");
         }
