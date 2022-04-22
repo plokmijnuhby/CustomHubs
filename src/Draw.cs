@@ -34,7 +34,8 @@ class patch_Draw : Draw
     extern public static void orig_PerpetualZoomOutPickNewBlock();
     new public static void PerpetualZoomOutPickNewBlock()
     {
-        if (!patch_LoadLevel.isFirstArea(ZoomOutAnimFocusBlock.SubLevel))
+        if (!patch_World.inCustomHub
+            || !patch_LoadLevel.IsFirstArea(ZoomOutAnimFocusBlock.SubLevel))
         {
             orig_PerpetualZoomOutPickNewBlock();
             return;

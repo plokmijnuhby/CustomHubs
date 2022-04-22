@@ -23,7 +23,7 @@ class patch_LoadLevel : LoadLevel
                select line.Split(' ');
     }
 
-    public static bool isFirstArea(Level level)
+    public static bool IsFirstArea(Level level)
     {
         // Check if level precedes area without unlockable walls
         var outside = level.GetExitBlock().OuterLevel;
@@ -62,7 +62,7 @@ class patch_LoadLevel : LoadLevel
             // of the level, because there's no previous level for them to be connected to.
             if (floor.Type == Floor.FloorType.LevelPortal
                 && Hub.puzzleLineRefs[floor.SceneName].toMe.Count == 0
-                && isFirstArea(floor.OuterLevel))
+                && IsFirstArea(floor.OuterLevel))
             {
                 floor.UnlockLines = floor.UnlockLines.Where(
                     line => floor.ypos + line.dy != floor.OuterLevel.height
