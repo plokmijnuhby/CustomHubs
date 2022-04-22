@@ -24,7 +24,8 @@ class patch_World : World
     new public static void GoToHub()
     {
         // If we are walking levels to make screenshots, or the user is exiting a portal,
-        // go to the custom hub, otherwise to go to the real hub.
+        // or the user toggled "unlock all puzzles", go to the custom hub,
+        // otherwise to go to the real hub.
         if (walking)
         {
             walking = false;
@@ -33,7 +34,7 @@ class patch_World : World
             patch_LoadLevel.LoadImages(customHubDir);
             GoToLevel("hub");
         }
-        else if (doJumpOut)
+        else if (doJumpOut || PauseMenu.Menu == PauseMenu.M.Settings)
         {
             GoToLevel("hub");
         }
