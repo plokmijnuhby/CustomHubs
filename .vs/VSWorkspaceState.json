@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src"
   ],
-  "SelectedNode": "\\CustomHubs.sln",
+  "SelectedNode": "\\src\\CustomHubs.sln",
   "PreviewInSolutionExplorer": false
 }

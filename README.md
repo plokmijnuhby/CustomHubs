@@ -33,7 +33,7 @@ In addition, walls also have an extra argument, with the following effects:
 
 Finally, a playerButton will launch the credits sequence, if unlocked.
 
-There are a few more important points to bear in mind. Firstly, for unlockable walls to work properly, the wall should be on one of the four spaces next to a reference. Secondly, the player should not start next to a portal, since this interferes with the way the portal is exited. Finally, when reloading a save, the player will be placed on the center of the second row from the top in the current area, so this spot should be kept clear in every area.
+There are a few more important points to bear in mind. Firstly, for unlockable walls to work properly, the wall should be on one of the four spaces next to a reference or block. Secondly, the player should not start next to a portal, since this interferes with the way the portal is exited. Finally, when reloading a save, the player will be placed on the center of the second row from the top in the current area, so this spot should be kept clear in every area.
 
 ### Other files
 All other files can be placed in subdirectories if you choose, which you may find useful for organising levels. In addition, most of the required data can be split across multiple files and placed in different directories if needed - two files named "area_data.txt" in different subdirectories will be treated as if they were appended.
