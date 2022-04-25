@@ -142,13 +142,24 @@ class patch_LoadLevel : LoadLevel
     extern public static void orig_Load(string data);
     new public static void Load(string data)
     {
-        if (currentLevelName != "custom_level" ||
-            Path.GetFileName(lastLoadedCustomLevelPath) != "hub.txt")
+        // Not a custom hub
+        if (Path.GetFileName(lastLoadedCustomLevelPath) != "hub.txt")
         {
+            patch_World.inCustomHub = false;
             orig_Load(data);
-            if (patch_World.inCustomHub) LastMinuteLevelFixes();
             return;
         }
+        // The real hub, or the previous loaded custom hub
+        else if (currentLevelName != "custom_level")
+        {
+            orig_Load(data);
+            if (patch_World.inCustomHub && lastLoadedCustomLevelPath == patch_World.paths["hub"])
+            {
+                LastMinuteLevelFixes();
+            }
+            return;
+        }
+        // A new custom hub, or the old one being reloaded.
 
         // I mean, it's not loaded *yet*.
         // This encourages the game to reload a couple of things.
