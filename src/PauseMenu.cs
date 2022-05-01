@@ -16,7 +16,7 @@ class patch_PauseMenu : PauseMenu
         orig_UpdateOptionNames();
         if (Menu == M.CustomLevels)
         {
-            string path = Path.Combine(RootCustomLevelsDir(), GetCustomLevelSubdir());
+            string path = Path.Combine(Path.GetFullPath(RootCustomLevelsDir()), GetCustomLevelSubdir());
             foreach (string dir in Directory.EnumerateDirectories(path))
             {
                 string hub = Path.Combine(dir, "hub.txt");
