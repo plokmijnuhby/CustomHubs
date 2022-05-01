@@ -18,7 +18,11 @@ class patch_World : World
             return;
         }
         currentLevelName = levelName;
-        LoadLevel.LoadWithFailsafe(ReadTextFile(paths[levelName]));
+        if (paths.ContainsKey(levelName))
+        {
+            LoadLevel.LoadWithFailsafe(ReadTextFile(paths[levelName]));
+        }
+        else GoToHub();
     }
 
     new public static void GoToHub()
