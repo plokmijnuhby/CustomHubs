@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 class patch_World : World
@@ -22,7 +23,11 @@ class patch_World : World
         {
             LoadLevel.LoadWithFailsafe(ReadTextFile(paths[levelName]));
         }
-        else GoToHub();
+        else
+        {
+            Debug.LogError("Couldn't find level " + levelName);
+            GoToHub();
+        }
     }
 
     new public static void GoToHub()
