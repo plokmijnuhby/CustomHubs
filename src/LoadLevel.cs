@@ -53,7 +53,11 @@ class patch_LoadLevel : LoadLevel
     private static void LastMinuteHubFixes()
     {
         var music = FMODSquare.AreaNameToFMODIndex;
-        music["Area_Intro"] = music[FindPlayerBlock().OuterLevel.hubAreaName];
+        int start_music;
+        if (music.TryGetValue(FindPlayerBlock().OuterLevel.hubAreaName, out start_music))
+        {
+            music["Area_Intro"] = start_music;
+        }
 
         // Fix some things in DoHubModifications that were just too complicated to do in assembly.
         foreach (var floor in floors)
