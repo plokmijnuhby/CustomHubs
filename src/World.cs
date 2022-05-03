@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MonoMod;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -30,12 +31,20 @@ class patch_World : World
         }
     }
 
+    [MonoModIgnore]
+    extern private static void WalkGoToNext();
+
     new public static void GoToHub()
     {
-        // If we are walking levels to make screenshots, or the user is exiting a portal,
+        // If we encountered an error while walking levels, go to the next one.
+        // If we just finished walking levels to make screenshots, or the user is exiting a portal,
         // or the user toggled "unlock all puzzles", go to the custom hub,
         // otherwise to go to the real hub.
-        if (walking)
+        if (WalkingLevels)
+        {
+            WalkGoToNext();
+        }
+        else if (walking)
         {
             walking = false;
             State = WS.Paused;
