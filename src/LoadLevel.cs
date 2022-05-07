@@ -54,7 +54,7 @@ class patch_LoadLevel : LoadLevel
     {
         var music = FMODSquare.AreaNameToFMODIndex;
         string area = FindPlayerBlock().OuterLevel.hubAreaName;
-        if (music.ContainsKey(area))
+        if (area != null && music.ContainsKey(area))
         {
             music["Area_Intro"] = music[area];
         }
@@ -198,7 +198,9 @@ class patch_LoadLevel : LoadLevel
             };
             puzzleNames.Add(tokens[0]);
         }
-        Hub.puzzleData["hub"] = new Hub.PuzzleData();
+        Hub.puzzleData["hub"] = new Hub.PuzzleData {
+            musicArea = -1
+        };
         Hub.puzzleNamesSorted = puzzleNames.ToArray();
 
         foreach (string file in GetFiles(dir, "*.txt"))
