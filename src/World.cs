@@ -52,7 +52,7 @@ class patch_World : World
             patch_LoadLevel.LoadImages(customHubDir);
             GoToLevel("hub");
         }
-        else if (doJumpOut || PauseMenu.Menu == PauseMenu.M.Settings)
+        else if (inCustomHub && (doJumpOut || PauseMenu.Menu == PauseMenu.M.Settings))
         {
             GoToLevel("hub");
         }
