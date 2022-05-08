@@ -147,6 +147,7 @@ class patch_LoadLevel : LoadLevel
     extern public static void orig_Load(string data);
     new public static void Load(string data)
     {
+        doJumpOut = false;
         // Not a custom hub
         if (Path.GetFileName(lastLoadedCustomLevelPath) != "hub.txt")
         {
