@@ -147,18 +147,20 @@ class patch_LoadLevel : LoadLevel
     extern public static void orig_Load(string data);
     new public static void Load(string data)
     {
-        doJumpOut = false;
         // Not a custom hub
-        if (Path.GetFileName(lastLoadedCustomLevelPath) != "hub.txt")
+        if (currentLevelName == "custom_level"
+            && Path.GetFileName(lastLoadedCustomLevelPath) != "hub.txt")
         {
             patch_World.inCustomHub = false;
             orig_Load(data);
+            doJumpOut = false;
             return;
         }
         // The real hub, or the previous loaded custom hub
         else if (currentLevelName != "custom_level")
         {
             orig_Load(data);
+            doJumpOut = false;
             if (patch_World.inCustomHub && lastLoadedCustomLevelPath == patch_World.paths["hub"])
             {
                 LastMinuteLevelFixes();
@@ -257,8 +259,9 @@ class patch_LoadLevel : LoadLevel
             StartWalkingLevels();
             return;
         }
-
+        
         orig_Load(data);
+        doJumpOut = false;
         LastMinuteHubFixes();
     }
 }
