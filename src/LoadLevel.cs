@@ -201,9 +201,6 @@ class patch_LoadLevel : LoadLevel
             };
             puzzleNames.Add(tokens[0]);
         }
-        Hub.puzzleData["hub"] = new Hub.PuzzleData {
-            musicArea = -1
-        };
         Hub.puzzleNamesSorted = puzzleNames.ToArray();
 
         foreach (string file in GetFiles(dir, "*.txt"))
@@ -242,7 +239,7 @@ class patch_LoadLevel : LoadLevel
         var walking = new List<string>();
         foreach (var entry in Hub.puzzleData)
         {
-            if (entry.Value.thumbnail == null && entry.Key != "hub")
+            if (entry.Value.thumbnail == null)
             {
                 walking.Add(entry.Key);
             }
