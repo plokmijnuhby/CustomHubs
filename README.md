@@ -30,6 +30,7 @@ In addition, walls also have an extra argument, with the following effects:
 - `_`: a regular wall.
 - the name of a puzzle: indicates this wall will unlock when enough puzzles are complete, and it should be connected to the named puzzle.
 - some other values are possible, but I didn't bother testing them to make sure they work properly. I wouldn't advise using them.
+The required number of puzzles to unlock a wall connected to a puzzle is the number of main line puzzles in the area. (In the main game, this is also true for most areas, but Wall and Swap are hardcoded to have a different number of puzzles required.)
 
 Finally, a playerButton will launch the credits sequence, if unlocked.
 
