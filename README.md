@@ -11,7 +11,7 @@ On Linux, you can instead type this (you may need to install mono first):
 ```
 mono MonoMod.exe Assembly-CSharp.dll
 ```
-This should generate a file called "MONOMODDED_Assembly-CSharp.dll" in that folder. Delete the file "Assembly-CSharp.dll" (or move it outside of the game files) and rename the MONOMODDED file to Assembly-CSharp.dll.
+This should generate two files, both beginning with "MONOMODDED". Delete the file called "Assembly-CSharp.dll" (or move it outside of the game files) and rename the newly generated file "MONOMODDED_Assembly-CSharp.dll" to "Assembly-CSharp.dll".
 
 You can now load custom hubs, by moving them into your custom level folder and loading them as normal.
 
