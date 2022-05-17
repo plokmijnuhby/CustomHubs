@@ -124,7 +124,10 @@ class patch_LoadLevel : LoadLevel
         }
         // ...and the music, which was also set to the one in puzzledata.
         // It is not possible to play *no* music.
-        Hub.puzzleData[currentLevelName].musicArea = customLevelMusic;
+        if (currentLevelName != "hub")
+        {
+            Hub.puzzleData[currentLevelName].musicArea = customLevelMusic;
+        }
 
         if (InHub()) LastMinuteHubFixes();
     }
