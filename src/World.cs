@@ -125,4 +125,17 @@ class patch_World : World
             }
         }
     }
+
+    extern private void orig_UpdateInner();
+    private void UpdateInner()
+    {
+        orig_UpdateInner();
+        if (celebration && !unlocking && !counting && inCustomHub && celebrationNumLevels <= 6)
+        {
+            // The original celebration time was 3.25 seconds, no matter how many puzzles in the
+            // area. We are changing to have 0.5 seconds per puzzle,
+            // by adding to the celebration timer.
+            celebrationT += Time.deltaTime * (3.25f / (celebrationNumLevels * 0.5f) - 1);
+        }
+    }
 }
