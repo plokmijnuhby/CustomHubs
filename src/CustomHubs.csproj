@@ -1,100 +1,42 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{551CFDAC-8359-41CE-A63D-933D3F13A0D1}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Assembly_CSharp.CustomHubs.mm</RootNamespace>
-    <AssemblyName>Assembly-CSharp.CustomHubs.mm</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>CS0626, CS0649, CS0169</NoWarn>
-    <PlatformTarget>x64</PlatformTarget>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>CS0626, CS0649, CS0169</NoWarn>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <AssemblyName>CustomHubs</AssemblyName>
+    <Description>Plugin to load custom hubs</Description>
+    <Version>1.1.0</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="Achievements.cs" />
-    <Compile Include="Draw.cs" />
-    <Compile Include="LoadLevel.cs" />
-    <Compile Include="Localization.cs" />
-    <Compile Include="MonoModRules.cs" />
-    <Compile Include="PauseMenu.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SaveFile.cs" />
-    <Compile Include="Screenshot.cs" />
-    <Compile Include="World.cs" />
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+    <PackageReference Include="UnityEngine.Modules" Version="2020.3.30" IncludeAssets="compile" />
   </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+  </ItemGroup>
+  
   <ItemGroup>
-    <Reference Include="Assembly-CSharp - Copy">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Assembly-CSharp - Copy.dll</HintPath>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.dll</HintPath>
+    <Reference Include="netstandard">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\netstandard.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="MonoMod, Version=22.3.23.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\MonoMod.22.3.23.4\lib\net452\MonoMod.exe</HintPath>
-    </Reference>
-    <Reference Include="MonoMod.Utils, Version=22.3.23.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\MonoMod.Utils.22.3.23.4\lib\net452\MonoMod.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
     <Reference Include="Unity.InputSystem">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Unity.InputSystem.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy Assembly-CSharp.CustomHubs.mm.dll "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed\Assembly-CSharp.CustomHubs.mm.dll"
-cd "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed"
-MonoMod.exe Assembly-CSharp.dll
-copy MONOMODDED_Assembly-CSharp.dll Assembly-CSharp.dll</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>cd "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\Patrick's Parabox_Data\Managed"
-copy "Assembly-CSharp - Copy.dll" "Assembly-CSharp.dll"</PreBuildEvent>
-  </PropertyGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy bin\Release\net46\CustomHubs.dll &quot;C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox\BepInEx\plugins\CustomHubs.dll&quot;" />
+  </Target>
 </Project>

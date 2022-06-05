@@ -1,141 +1,148 @@
-﻿using MonoMod;
-using System.Collections.Generic;
-using System.IO;
+﻿using HarmonyLib;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-class patch_World : World
+namespace CustomHubs;
+
+[HarmonyPatch(typeof(World), "GoToLevel")]
+public class World_GoToLevel
 {
-    public static bool inCustomHub;
-    public static bool walking;
-    public static string customHubDir;
-    public static Dictionary<string, string> paths = new Dictionary<string, string>();
-    extern public static void orig_GoToLevel(string levelName);
-    new public static void GoToLevel(string levelName)
+    public static bool Prefix(string levelName)
     {
-        if (!inCustomHub)
+        if (!CustomHub.inCustomHub)
         {
-            orig_GoToLevel(levelName);
-            return;
+            return true;
         }
-        currentLevelName = levelName;
-        if (paths.ContainsKey(levelName))
+        World.currentLevelName = levelName;
+        if (CustomHub.paths.ContainsKey(levelName))
         {
-            LoadLevel.LoadWithFailsafe(ReadTextFile(paths[levelName]));
+            LoadLevel.LoadWithFailsafe(World.ReadTextFile(CustomHub.paths[levelName]));
         }
         else
         {
             Debug.LogError("Couldn't find level " + levelName);
-            GoToHub();
+            World.GoToHub();
         }
+        return false;
     }
+}
 
-    [MonoModIgnore]
-    extern private static void WalkGoToNext();
-
-    new public static void GoToHub()
+[HarmonyPatch(typeof(World), "GoToHub")]
+public class World_GoToHub
+{
+    public static bool Prefix()
     {
         // If we encountered an error while walking levels, go to the next one.
         // If we just finished walking levels to make screenshots, or the user is exiting a portal,
-        // or the user toggled "unlock all puzzles", go to the custom hub,
-        // otherwise to go to the real hub.
-        if (WalkingLevels)
+        // or the user toggled "unlock all puzzles", go to the custom hub.
+        // In any other scenario, go to the real hub.
+        if (World.WalkingLevels)
         {
-            WalkGoToNext();
+            typeof(World)
+                .GetMethod("WalkGoToNext", BindingFlags.NonPublic | BindingFlags.Static)
+                .Invoke(null, null);
+            return false;
         }
-        else if (walking)
+        else if (CustomHub.walking)
         {
-            walking = false;
-            State = WS.Paused;
+            CustomHub.walking = false;
+            World.State = World.WS.Paused;
             Controls.devShrinkScreenDown = false;
-            patch_LoadLevel.LoadImages(customHubDir);
-            GoToLevel("hub");
+            CustomHub.LoadImages();
         }
-        else if (!inCustomHub || doJumpOut || PauseMenu.Menu == PauseMenu.M.Settings)
+        else if (CustomHub.inCustomHub && !World.doJumpOut && PauseMenu.Menu != PauseMenu.M.Settings)
         {
-            GoToLevel("hub");
-        }
-        else
-        {
-            inCustomHub = false;
-            hubLoaded = false;
+            CustomHub.inCustomHub = false;
+            World.hubLoaded = false;
             Hub.puzzleData.Clear();
             Hub.puzzleLineRefs.Clear();
             Hub.LoadPuzzleData();
-            FMODSquare.AreaNameToFMODIndex = patch_LoadLevel.oldFMODIndex;
-            UnlockAllRepositionAreaName = null;
+            FMODSquare.AreaNameToFMODIndex = CustomHub.oldFMODIndex;
+            World.UnlockAllRepositionAreaName = null;
             SaveFile.Load();
-            orig_GoToLevel("hub");
         }
+        return true;
     }
+}
 
-    extern public static void orig_GoToSaveFilesStartupLevel();
-    new public static void GoToSaveFilesStartupLevel()
+[HarmonyPatch(typeof(World), "GoToSaveFilesStartupLevel")]
+public class World_GoToSaveFilesStartupLevel
+{
+    public static bool Prefix()
     {
         // If we are in the real hub, or the user pressed "Return to title",
         // run the real function, else go to the fake hub.
-        if (PauseMenu.Menu == PauseMenu.M.Pause || !inCustomHub)
+        if (PauseMenu.Menu == PauseMenu.M.Pause || !CustomHub.inCustomHub)
         {
-            orig_GoToSaveFilesStartupLevel();
+            return true;
         }
         else
         {
-            GoToLevel("hub");
+            World.GoToLevel("hub");
             // At this point in the real function, deleting the save file
             // returns you to the title, but we don't want that to happen here.
+            return false;
         }
     }
+}
 
-    extern private void orig_KeyboardShortcuts();
-    private void KeyboardShortcuts()
+[HarmonyPatch(typeof(World), "KeyboardShortcuts")]
+public class World_KeyboardShortcuts
+{
+    public static void Prefix()
     {
-        if(Keyboard.current.f5Key.wasPressedThisFrame && inCustomHub)
+        if (Keyboard.current.f5Key.wasPressedThisFrame && CustomHub.inCustomHub)
         {
-            if (currentLevelName == "hub")
+            if (World.currentLevelName == "hub")
             {
-                currentLevelName = "custom_level";
-                LoadLevel.Load(ReadTextFile(lastLoadedCustomLevelPath));
+                World.currentLevelName = "custom_level";
+                LoadLevel.LoadWithFailsafe(
+                    World.ReadTextFile(World.lastLoadedCustomLevelPath));
             }
-            else GoToLevel(currentLevelName);
+            else World.GoToLevel(World.currentLevelName);
         }
-        orig_KeyboardShortcuts();
     }
+}
 
-    extern public static void orig_UpdateButtonsPressed();
-    new public static void UpdateButtonsPressed()
+[HarmonyPatch(typeof(World), "UpdateButtonsPressed")]
+public class World_UpdateButtonsPressed
+{
+    public static void Postfix()
     {
-        orig_UpdateButtonsPressed();
         // Control whether the credits are switched on.
-        if (inCustomHub && InHub())
+        if (CustomHub.inCustomHub && World.InHub())
         {
-            foreach (var floor in (from floor in floors
-                                   where floor.Type == Floor.FloorType.PlayerButton
-                                   from floor2 in floor.OuterLevel.floorList
-                                   select floor2))
+            foreach (var floor in from floor in World.floors
+                                  where floor.Type == Floor.FloorType.PlayerButton
+                                  from floor2 in floor.OuterLevel.floorList
+                                  select floor2)
             {
                 if (floor.Type == Floor.FloorType.LevelPortal && floor.Hard == 0 && !floor.Won
                     && !Hub.puzzleLineRefs[floor.SceneName].fromMe.Where(
                         line => Hub.puzzleData[line.to].hard == 0
                     ).Any())
                 {
-                    ButtonsSatisfied = false;
+                    World.ButtonsSatisfied = false;
                     return;
                 }
             }
         }
     }
+}
 
-    extern private void orig_UpdateInner();
-    private void UpdateInner()
+[HarmonyPatch(typeof(World), "UpdateInner")]
+public class World_UpdateInner
+{
+    public static void Postfix()
     {
-        orig_UpdateInner();
-        if (celebration && !unlocking && !counting && inCustomHub && celebrationNumLevels <= 6)
+        if (World.celebration && !World.unlocking && !World.counting && CustomHub.inCustomHub)
         {
             // The original celebration time was 3.25 seconds, no matter how many puzzles in the
-            // area. We are changing to have 0.5 seconds per puzzle,
-            // by adding to the celebration timer.
-            celebrationT += Time.deltaTime * (3.25f / (celebrationNumLevels * 0.5f) - 1);
+            // area. We are changing to have a shorter celebration time.
+            var duration = Mathf.Pow(2, -World.celebrationNumLevels/2f + 2) + 3.5f;
+            World.celebrationT += Time.deltaTime * (3.25f / duration - 1);
         }
     }
 }

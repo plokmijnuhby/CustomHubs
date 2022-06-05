@@ -1,49 +1,63 @@
-﻿using System.IO;
+﻿using HarmonyLib;
 using System.Text.RegularExpressions;
 
-class patch_Draw : Draw
+namespace CustomHubs;
+
+[HarmonyPatch(typeof(Draw), "UpdateCameraMode")]
+public class Draw_UpdateCameraMode
 {
-    extern public static void orig_UpdateCameraMode();
-    new public static void UpdateCameraMode()
+    // We don't want to display the hub on the title,
+    // under any circumstances
+    public static void Prefix()
     {
-        // We don't want to display the hub on the title,
-        // under any circumstances
-        if (patch_World.inCustomHub)
+        if (CustomHub.inCustomHub)
         {
             World.FirstLevelSinceStartup = false;
         }
-        orig_UpdateCameraMode();
     }
+}
 
-    extern public static void orig_ConstructCreditsString();
-    new public static void ConstructCreditsString()
+[HarmonyPatch(typeof(Draw), "ConstructCreditsString")]
+public class Draw_ConstructCreditsString
+{
+    public static bool Prefix()
     {
-        if (patch_World.inCustomHub)
+        if (CustomHub.inCustomHub && CustomHub.paths.ContainsKey("credits"))
         {
-            string path;
-            if (patch_World.paths.TryGetValue("credits", out path))
+            Draw.creditsString = World.ReadTextFile(CustomHub.paths["credits"]);
+            Draw.creditsLines = Regex.Matches(Draw.creditsString, "\n").Count;
+            return false;
+        }
+        else return true;
+    }
+}
+[HarmonyPatch(typeof(Draw), "PerpetualZoomOutPickNewBlock")]
+public class Draw_PerpetualZoomOutPickNewBlock
+{
+    public struct State
+    {
+        public bool firstArea;
+        public int oldEffect;
+    }
+    public static void Prefix(ref State __state)
+    {
+        if (CustomHub.inCustomHub
+            && CustomHub.IsFirstArea(Draw.ZoomOutAnimFocusBlock.SubLevel))
+        {
+            __state = new State
             {
-                creditsString = World.ReadTextFile(path);
-                creditsLines = Regex.Matches(creditsString, "\n").Count;
-                return;
-            }
+                firstArea = true,
+                oldEffect = Draw.ZoomOutAnimFocusBlock.SpecialEffect
+            };
+            Draw.ZoomOutAnimFocusBlock.SpecialEffect = 6;
         }
-        orig_ConstructCreditsString();
     }
 
-    extern public static void orig_PerpetualZoomOutPickNewBlock();
-    new public static void PerpetualZoomOutPickNewBlock()
+    public static void Postfix(ref State __state)
     {
-        if (!patch_World.inCustomHub
-            || !patch_LoadLevel.IsFirstArea(ZoomOutAnimFocusBlock.SubLevel))
+        if (__state.firstArea)
         {
-            orig_PerpetualZoomOutPickNewBlock();
-            return;
+            Draw.ZoomOutAnimFocusBlock.SpecialEffect = __state.oldEffect;
         }
-        // This tells parabox to still run its checks, but take this to be the last block
-        int oldEffect = ZoomOutAnimFocusBlock.SpecialEffect;
-        ZoomOutAnimFocusBlock.SpecialEffect = 6;
-        orig_PerpetualZoomOutPickNewBlock();
-        ZoomOutAnimFocusBlock.SpecialEffect = oldEffect;
     }
 }

@@ -1,31 +1,30 @@
-﻿using MonoMod;
+﻿using HarmonyLib;
 using System.IO;
 
-class patch_PauseMenu : PauseMenu
-{
-    [MonoModIgnore]
-    extern private static void Resume();
-    public static void ResumePublic()
-    {
-        Resume();
-    }
+namespace CustomHubs;
 
-    extern public static void orig_UpdateOptionNames();
-    new public static void UpdateOptionNames()
+[HarmonyPatch(typeof(PauseMenu), "UpdateOptionNames")]
+public class PauseMenu_UpdateOptionNames
+{
+    public static void Postfix()
     {
-        orig_UpdateOptionNames();
-        if (Menu == M.CustomLevels)
+        if (PauseMenu.Menu == PauseMenu.M.CustomLevels)
         {
-            string path = Path.Combine(Path.GetFullPath(RootCustomLevelsDir()), GetCustomLevelSubdir());
+            string path = Path.Combine(
+                Path.GetFullPath(PauseMenu.RootCustomLevelsDir()),
+                PauseMenu.GetCustomLevelSubdir());
             foreach (string dir in Directory.EnumerateDirectories(path))
             {
                 string hub = Path.Combine(dir, "hub.txt");
                 if (File.Exists(hub))
                 {
                     var displayName = Path.GetFileName(dir);
-                    int index = OptionNames.IndexOf(displayName + Path.DirectorySeparatorChar);
-                    OptionNames[index] = displayName;
-                    CustomLevelItems[index] = new CustomLevelItem { path = hub };
+                    int index = PauseMenu.OptionNames.IndexOf(
+                        displayName + Path.DirectorySeparatorChar);
+                    PauseMenu.OptionNames[index] = displayName;
+                    PauseMenu.CustomLevelItems[index] = new PauseMenu.CustomLevelItem {
+                        path = hub
+                    };
                 }
             }
         }

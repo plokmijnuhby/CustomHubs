@@ -1,17 +1,7 @@
 # CustomHubs
 This is a mod for Patrick's Parabox, to allow support for custom hub areas to be created. Using it is a little complicated, so feel free to DM me if I haven't made something clear enough here.
 ## Installation
-To install this mod, first locate the parabox game files. These are usually found at "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox". Go to [the MonoMod releases page](https://github.com/MonoMod/MonoMod/releases/) and download the version ending in "net452.zip". Unzip it and copy the entire contents into the parabox game files, in the folder "Patrick's Parabox\Patrick's Parabox_Data\Managed". Download the file "Assembly-CSharp.CustomHubs.mm.dll" from [the releases page of this repository](https://github.com/plokmijnuhby/CustomHubs/releases), and move it into the same folder.
-
-If you are on windows, open up a command prompt, navigate to that folder, and type in
-```
-MonoMod.exe Assembly-CSharp.dll
-```
-On Linux, you can instead type this (you may need to install mono first):
-```
-mono MonoMod.exe Assembly-CSharp.dll
-```
-This should generate two files, both beginning with "MONOMODDED". Delete the file called "Assembly-CSharp.dll" (or move it outside of the game files) and rename the newly generated file "MONOMODDED_Assembly-CSharp.dll" to "Assembly-CSharp.dll".
+To install this mod, first locate the parabox game files. These are usually found at "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox". Install BepInEx into this folder, by following the instructions in [the BepInEx documentation](https://docs.bepinex.dev/articles/user_guide/installation/index.html).Download the file "CustomHubs.dll" from [the releases page of this repository](https://github.com/plokmijnuhby/CustomHubs/releases), and move it into the folder "Patrick's Parabox\BepInEx\plugins", which should already have been generated.
 
 You can now load custom hubs, by moving them into your custom level folder and loading them as normal.
 
@@ -24,23 +14,27 @@ The most important file (and technically the only required file) is the map file
 ```
 Floor x y Portal puzzle_name
 ```
-References have a slightly different syntax to normal, since they have an additional argument at the end, giving the name of the area they are pointing to. Obviously, every area should have at least one reference to it, otherwise the game will not know which area it is.
+References have a slightly different syntax to normal, since they have an additional argument at the end, giving the name of the area they are pointing to. Every area should have at least one reference to it, otherwise the game will not know which area it is.
 
 In addition, walls also have an extra argument, with the following effects:
 - `_`: a regular wall.
 - the name of a puzzle: indicates this wall will unlock when enough puzzles are complete, and it should be connected to the named puzzle.
-- some other values are possible, but I didn't bother testing them to make sure they work properly. I wouldn't advise using them.
+- `*clear`: unlocks when the player has seen the credits.
+- `*clear_or_unlock_all`: as above, but also unlocks if the "unlock all puzzles" setting is activated.
+- `*all`: unlocks when all puzzles are complete.
 
 The required number of puzzles to unlock a wall connected to a puzzle is the number of main line puzzles in the area. (In the main game, this is also true for most areas, but Wall and Swap are hardcoded to have a different number of puzzles required.)
 
 Finally, a playerButton will launch the credits sequence, if unlocked.
 
-There are a few more important points to bear in mind. Firstly, for unlockable walls to work properly, the wall should be on one of the four spaces next to a reference or block. Secondly, the player should not start next to a portal, since this interferes with the way the portal is exited. Finally, when reloading a save, the player will be placed on the center of the second row from the top in the current area, so this spot should be kept clear in every area.
+The mechanics for deciding when a level is unlocked are complicated. If a puzzle has any lines going to it from other puzzles, the first of which is complete, then the puzzle is unlocked. In addition, if an area is not within another area, or the space above it is empty (or an unlocked wall) some of the puzzles in it are automatically unlocked. This works in a way that is mostly easy to understand, but it should be noted that blue bonus levels with no lines going to them only unlock when all unlockable walls in the area (ie walls with something other than `_` as their extra argument) are unlocked.
+
+There are a few more important points to bear in mind. Firstly, the player should not start next to a portal, since this interferes with the way the portal is exited. Secondly, when reloading a save, the player will be placed on the center of the second row from the top in the current area, so this spot should be kept clear in every area.
 
 ### Other files
-All other files can be placed in subdirectories if you choose, which you may find useful for organising levels. In addition, most of the required data can be split across multiple files and placed in different directories if needed - two files named "area_data.txt" in different subdirectories will be treated as if they were appended.
+All other files can be placed in subdirectories if you choose, which you may find useful for organising levels. In addition, most of the required data can be split across multiple files and placed in different directories if needed - two files named "area_data.txt" in different subdirectories will be treated as if they were concatenated.
 
-Each puzzle should be given a level file called "{name_of_puzzle}.txt". This can be any normal custom level, with one exception - custom_level_music must be set, to something other than -1. There should also be an image file, eg "{name_of_puzzle}.png", indicating what should be displayed on the portal. The image can be png, jpeg, or any other format that unity understands. If you don't provide an image, one will be generated for you.
+Each puzzle should be given a level file called "{name_of_puzzle}.txt". This can be any normal custom level, with one exception - custom_level_music must be set, to something other than -1. There should also be an image file, eg "{name_of_puzzle}.png", indicating what should be displayed on the portal. If you don't provide an image, one will be generated for you.
 
 The file "area_data.txt" should have an entry for every area of the hub. Each line has the format:
 ```

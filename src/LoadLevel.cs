@@ -1,59 +1,28 @@
-﻿using MonoMod;
+﻿using HarmonyLib;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using UnityEngine;
 
-class patch_LoadLevel : LoadLevel
+namespace CustomHubs;
+
+[HarmonyPatch(typeof(LoadLevel), "Load")]
+public class LoadLevel_Load
 {
-    [MonoModIgnore]
-    private static bool randomize;
-    [MonoModIgnore]
-    private static int customLevelPalette;
-    public static Dictionary<string, int> oldFMODIndex = FMODSquare.AreaNameToFMODIndex;
-
-    private static IEnumerable<string> GetFiles(string dir, string pattern)
+    public enum State
     {
-        return Directory.EnumerateFiles(dir, pattern, SearchOption.AllDirectories);
-    }
-    private static IEnumerable<string[]> GetTokens(string dir, string name)
-    {
-        return from file in GetFiles(dir, name + ".txt")
-               from line in ReadTextFile(file).Replace("\r", "").Split('\n')
-               select line.Split(' ');
-    }
-
-    public static bool IsFirstArea(Level level)
-    {
-        // Check if level precedes area without unlockable walls
-        var outside = level.GetExitBlock().OuterLevel;
-        if (outside != null && outside.hubAreaName != null)
-        {
-            if (wallUnlockAnimPlayed.ContainsKey(outside.hubAreaName))
-            {
-                return false;
-            }
-            foreach (var block in outside.blockList)
-            {
-                if (block.unlockerScene != null)
-                {
-                    foreach(var floor2 in outside.floorList)
-                    {
-                        if (floor2.SceneName == block.unlockerScene)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
+        NOT_CUSTOM,
+        ALREADY_LOADED,
+        LOADING,
+        WALKING
     }
 
     private static void LastMinuteHubFixes()
     {
         var music = FMODSquare.AreaNameToFMODIndex;
-        string area = FindPlayerBlock().OuterLevel.hubAreaName;
+        string area = World.FindPlayerBlock().OuterLevel.hubAreaName;
         if (area != null && music.ContainsKey(area))
         {
             music["Area_Intro"] = music[area];
@@ -61,19 +30,19 @@ class patch_LoadLevel : LoadLevel
         else Debug.LogError("Couldn't find music for area " + area);
 
         // Fix some things in DoHubModifications that were just too complicated to do in assembly.
-        foreach (var floor in floors)
+        foreach (var floor in World.floors)
         {
             // In the first area, main-path portals with no lines should not be given a line out
             // of the level, because there's no previous level for them to be connected to.
             if (floor.Type == Floor.FloorType.LevelPortal
                 && Hub.puzzleLineRefs[floor.SceneName].toMe.Count == 0
-                && IsFirstArea(floor.OuterLevel))
+                && CustomHub.IsFirstArea(floor.OuterLevel))
             {
                 floor.UnlockLines = floor.UnlockLines.Where(
                     line => floor.ypos + line.dy != floor.OuterLevel.height
                     ).ToArray();
             }
-
+            
             // Add a line from the final level to the credits
             if (floor.Type == Floor.FloorType.LevelPortal
                 && !Hub.puzzleLineRefs[floor.SceneName].fromMe.Where(
@@ -94,106 +63,53 @@ class patch_LoadLevel : LoadLevel
                             thick = true
                         };
                         Floor.ComputeUnlockLineShape(floor, floor2, unlockLine, false);
-                        floor.UnlockLines = floor.UnlockLines.Append(unlockLine).ToArray();
+                        floor.UnlockLines = floor.UnlockLines.AddItem(unlockLine).ToArray();
                     }
                 }
             }
         }
     }
-
-    private static void LastMinuteLevelFixes()
-    {
-        // Fix palette, which was set to the one in puzzledata
-        if (!randomize)
-        {
-            if (customLevelPalette >= 0)
-            {
-                ApplyPalette(customLevelPalette);
-            }
-            else
-            {
-                Draw.Palette = 0;
-                foreach (var block in blocks)
-                {
-                    block.hue = block.startHue;
-                    block.sat = block.startSat;
-                    block.val = block.startVal;
-                }
-                ComputeBorderColors();
-            }
-        }
-        // ...and the music, which was also set to the one in puzzledata.
-        // It is not possible to play *no* music.
-        if (currentLevelName != "hub")
-        {
-            Hub.puzzleData[currentLevelName].musicArea = customLevelMusic;
-        }
-
-        if (InHub()) LastMinuteHubFixes();
-    }
-    public static void LoadImages(string dir)
-    {
-        foreach (string file in GetFiles(dir, "*"))
-        {
-            if (Path.GetExtension(file) == ".txt") continue;
-            string name = Path.GetFileNameWithoutExtension(file);
-            if (Hub.puzzleData.ContainsKey(name)
-                && Hub.puzzleData[name].thumbnail == null)
-            {
-                var tex = new Texture2D(0, 0);
-                tex.LoadImage(File.ReadAllBytes(file));
-                Hub.puzzleData[name].thumbnail = tex;
-            }
-        }
-    }
-
-    extern public static void orig_Load(string data);
-    new public static void Load(string data)
+    
+    public static bool Prefix(out State __state)
     {
         // Not a custom hub
-        if (currentLevelName == "custom_level"
-            && Path.GetFileName(lastLoadedCustomLevelPath) != "hub.txt")
+        if (World.currentLevelName == "custom_level"
+            && Path.GetFileName(World.lastLoadedCustomLevelPath) != "hub.txt")
         {
-            patch_World.inCustomHub = false;
-            orig_Load(data);
-            doJumpOut = false;
-            return;
+            CustomHub.inCustomHub = false;
+            __state = State.NOT_CUSTOM;
+            return true;
         }
         // The real hub, or the previous loaded custom hub
-        else if (currentLevelName != "custom_level")
+        else if (World.currentLevelName != "custom_level")
         {
-            orig_Load(data);
-            doJumpOut = false;
-            if (patch_World.inCustomHub && lastLoadedCustomLevelPath == patch_World.paths["hub"])
-            {
-                LastMinuteLevelFixes();
-            }
-            return;
+            __state = State.ALREADY_LOADED;
+            return true;
         }
+
         // A new custom hub, or the old one being reloaded.
 
         // I mean, it's not loaded *yet*.
         // This encourages the game to reload a couple of things.
-        hubLoaded = false;
-
-        patch_World.inCustomHub = true;
-        currentLevelName = "hub";
+        World.hubLoaded = false;
+        CustomHub.inCustomHub = true;
+        World.currentLevelName = "hub";
         Hub.puzzleData.Clear();
-        patch_World.paths.Clear();
-        string dir = Path.GetDirectoryName(lastLoadedCustomLevelPath);
-        patch_World.customHubDir = dir;
+        CustomHub.paths.Clear();
+        string dir = Path.GetDirectoryName(World.lastLoadedCustomLevelPath);
+        CustomHub.customHubDir = dir;
 
         var music = FMODSquare.AreaNameToFMODIndex = new Dictionary<string, int>();
         music["Menu_Paused"] = 20;
         music["Menu_Credits"] = 21;
-        foreach (string[] tokens in GetTokens(dir, "area_data"))
+        foreach (string[] tokens in CustomHub.GetTokens("area_data"))
         {
             string name = tokens[0];
             music[name] = int.Parse(tokens[1]);
         }
 
         var puzzleNames = new List<string>();
-        foreach (string[] tokens in GetTokens(dir, "puzzle_data"))
+        foreach (string[] tokens in CustomHub.GetTokens("puzzle_data"))
         {
             Hub.puzzleData[tokens[0]] = new Hub.PuzzleData
             {
@@ -206,13 +122,13 @@ class patch_LoadLevel : LoadLevel
         }
         Hub.puzzleNamesSorted = puzzleNames.ToArray();
 
-        foreach (string file in GetFiles(dir, "*.txt"))
+        foreach (string file in CustomHub.GetFiles("*.txt"))
         {
-            patch_World.paths[Path.GetFileNameWithoutExtension(file)] = file;
+            CustomHub.paths[Path.GetFileNameWithoutExtension(file)] = file;
         }
-        patch_World.paths["save"] = Path.Combine(dir, "save.txt");
+        CustomHub.paths["save"] = Path.Combine(dir, "save.txt");
         SaveFile.Load();
-        LoadImages(dir);
+        CustomHub.LoadImages();
 
         Hub.puzzleLineRefs.Clear();
         foreach (string key in Hub.puzzleData.Keys)
@@ -224,7 +140,7 @@ class patch_LoadLevel : LoadLevel
             };
         }
         var puzzleLines = new List<Hub.PuzzleLine>();
-        foreach (string[] tokens in GetTokens(dir, "puzzle_lines"))
+        foreach (string[] tokens in CustomHub.GetTokens("puzzle_lines"))
         {
             var puzzleLine = new Hub.PuzzleLine
             {
@@ -250,18 +166,111 @@ class patch_LoadLevel : LoadLevel
         if (walking.Count != 0)
         {
             Hub.puzzleNamesForWalking = walking.ToArray();
-            Screenshotting = true;
+            World.Screenshotting = true;
             // devShrinkScreenDown does several things, most importantly
             // not rendering the player
             Controls.devShrinkScreenDown = true;
-            patch_World.walking = true;
-            patch_PauseMenu.ResumePublic();
-            StartWalkingLevels();
-            return;
+            CustomHub.walking = true;
+            typeof(PauseMenu)
+                .GetMethod("Resume", BindingFlags.NonPublic | BindingFlags.Static)
+                .Invoke(null, null);
+            World.StartWalkingLevels();
+            __state = State.WALKING;
+            return false;
         }
+        __state = State.LOADING;
+        return true;
+    }
+    
+    public static void Postfix(ref State __state, bool ___randomize, int ___customLevelPalette)
+    {
+        World.doJumpOut = false;
+        if (__state == State.ALREADY_LOADED && CustomHub.inCustomHub
+            && World.lastLoadedCustomLevelPath == CustomHub.paths["hub"])
+        {
+            // Fix palette, which was set to the one in puzzledata
+            if (!___randomize)
+            {
+                if (___customLevelPalette >= 0)
+                {
+                    LoadLevel.ApplyPalette(___customLevelPalette);
+                }
+                else
+                {
+                    Draw.Palette = 0;
+                    foreach (var block in World.blocks)
+                    {
+                        block.hue = block.startHue;
+                        block.sat = block.startSat;
+                        block.val = block.startVal;
+                    }
+                    LoadLevel.ComputeBorderColors();
+                }
+            }
+            // ...and the music, which was also set to the one in puzzledata.
+            // It is not possible to play *no* music.
+            if (World.currentLevelName != "hub")
+            {
+                Hub.puzzleData[World.currentLevelName].musicArea = World.customLevelMusic;
+            }
+
+            if (World.InHub()) LastMinuteHubFixes();
+        }
+        else if (__state == State.LOADING)
+        {
+            LastMinuteHubFixes();
+        }
+    }
+}
+
+[HarmonyPatch(typeof(LoadLevel), "DoHubModifications")]
+public class LoadLevel_DoHubModifications
+{
+    public static IEnumerable<CodeInstruction> Transpiler(
+        IEnumerable<CodeInstruction> instructions, ILGenerator ilprocessor)
+    {
+        var instrs = instructions.ToList();
+        var unlock_by_default_label = ilprocessor.DefineLabel();
         
-        orig_Load(data);
-        doJumpOut = false;
-        LastMinuteHubFixes();
+        for (int i = 0; i < instrs.Count; i++)
+        {
+            var instr = instrs[i];
+            
+            // Every time the method sets level.hubShortcutWon on a level,
+            // we first check if level is null, and if so skip the access.
+            // This fixes a crash involving hub areas with certain names
+            // not being present.
+            if (instr.StoresField(AccessTools.Field(typeof(Level), "hubShortcutWon")))
+            {
+                // The instruction at ifTrue pushed the value to be assigned.
+                // Both branch instructions pop the stack.
+                var ifTrue = instrs[i - 1];
+                var ifTrueLabel = ilprocessor.DefineLabel();
+                ifTrue.labels.Add(ifTrueLabel);
+                
+                var ifFalse = instrs[i + 1];
+                var ifFalseLabel = ilprocessor.DefineLabel();
+                ifFalse.labels.Add(ifFalseLabel);
+                
+                instrs.Insert(i - 1, new CodeInstruction(OpCodes.Dup));
+                instrs.Insert(i, new CodeInstruction(OpCodes.Brtrue_S, ifTrueLabel));
+                instrs.Insert(i + 1, new CodeInstruction(OpCodes.Brfalse_S, ifFalseLabel));
+                i += 4;
+            }
+            // If a hub level is not in another hub level, we forgo the usual rules
+            // about levels that aren't connected to anything being unlocked.
+            // In game, this only occurs in the intro, which the game fixes by checking
+            // area name.
+            else if (instr.Calls(AccessTools.Method(typeof(Level), "GetExitBlock")))
+            {
+                instrs[i + 4].operand = unlock_by_default_label;
+            }
+            else if (instr.LoadsField(AccessTools.Field(typeof(Floor), "Hard")))
+            {
+                instrs[i - 1].labels.Add(unlock_by_default_label);
+                break;
+            }
+        }
+        return instrs.AsEnumerable();
     }
 }
