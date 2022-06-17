@@ -1,7 +1,7 @@
 # CustomHubs
 This is a mod for Patrick's Parabox, to allow support for custom hub areas to be created. Using it is a little complicated, so feel free to DM me if I haven't made something clear enough here.
 ## Installation
-To install this mod, first locate the parabox game files. These are usually found at "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox". Install BepInEx into this folder, by following the instructions in [the BepInEx documentation](https://docs.bepinex.dev/articles/user_guide/installation/index.html).Download the file "CustomHubs.dll" from [the releases page of this repository](https://github.com/plokmijnuhby/CustomHubs/releases), and move it into the folder "Patrick's Parabox\BepInEx\plugins", which should already have been generated.
+To install this mod, first locate the parabox game files. These are usually found at "C:\Program Files (x86)\Steam\steamapps\common\Patrick's Parabox". Install BepInEx into this folder, by following the instructions in [the BepInEx documentation](https://docs.bepinex.dev/articles/user_guide/installation/index.html). (On Windows, the correct version depends on whether you have a 32 bit or 64 bit computer.) Download the file "CustomHubs.dll" from [the releases page of this repository](https://github.com/plokmijnuhby/CustomHubs/releases), and move it into the folder "Patrick's Parabox\BepInEx\plugins", which should already have been generated.
 
 You can now load custom hubs, by moving them into your custom level folder and loading them as normal.
 
