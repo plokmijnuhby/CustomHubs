@@ -52,7 +52,8 @@ public class World_GoToHub
             Controls.devShrinkScreenDown = false;
             CustomHub.LoadImages();
         }
-        else if (CustomHub.inCustomHub && !World.doJumpOut && PauseMenu.Menu != PauseMenu.M.Settings)
+        else if ((CustomHub.inCustomHub && !World.doJumpOut || !CustomHub.inCustomHub)
+            && PauseMenu.Menu != PauseMenu.M.Settings)
         {
             CustomHub.inCustomHub = false;
             World.hubLoaded = false;
