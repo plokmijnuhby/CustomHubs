@@ -52,7 +52,7 @@ public class World_GoToHub
             Controls.devShrinkScreenDown = false;
             CustomHub.LoadImages();
         }
-        else if ((CustomHub.inCustomHub && !World.doJumpOut || !CustomHub.inCustomHub)
+        else if ((CustomHub.inCustomHub && !World.doJumpOut || World.currentLevelName == "custom_level")
             && PauseMenu.Menu != PauseMenu.M.Settings)
         {
             CustomHub.inCustomHub = false;
