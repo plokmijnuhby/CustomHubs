@@ -1,3 +1,5 @@
+[English](README.md) | [简体中文](README_zh.md)
+
 # CustomHubs
 This is a mod for Patrick's Parabox, to allow support for custom hub areas to be created. Using it is a little complicated, so feel free to DM me if I haven't made something clear enough here.
 ## Installation
